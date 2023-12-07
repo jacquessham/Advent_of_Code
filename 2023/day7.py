@@ -73,3 +73,55 @@ for i, elem in enumerate(games_sorted):
 print(ans)
 
 
+## Part 2
+def replace_part2label(hand):
+	# order: A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J
+	# But J becomes joker
+	if hand == 'JJJJJ': return ('ZZZZZ','00000')
+
+	cnt = Counter(hand)
+
+	# Convert cnt to a list
+	vals = [v for k,v in cnt.items()]
+	vals_sorted = sorted(cnt.items(), key=lambda x: [-x[1], x[0]])
+	card_mostfreq = vals_sorted[0][0]
+
+	# In case J is the most freq
+	if card_mostfreq == 'J':
+		card_mostfreq = vals_sorted[1][0]
+
+	# Replace joker cards first
+	hand_label = hand.replace('J', card_mostfreq)
+	# Replace all card label altogther
+	hand_label = hand_label.replace('A','Z').replace('K','Y').replace('Q','X')\
+		.replace('T','V')
+
+	return (hand_label, hand)
+
+games = []
+for line in lines:
+	curr_hand = line.split(' ')
+
+	hand_label, hand = replace_part2label(curr_hand[0])
+	
+
+
+	card_strength = strength(hand_label)
+
+	sorting_label_hand = replace_label(hand.replace('J','0'))
+
+	# Each elem will have [strenght, sorting_label_hand, original_hand, bet]
+	curr_hand = [card_strength, sorting_label_hand,
+	 curr_hand[0], int(curr_hand[1])]
+	games.append(curr_hand)
+
+ans = 0
+
+# Sort the games to get the mulitplier
+games_sorted = sorted(games, key=lambda x: [-x[0][0], x[1]])
+# Loop over to calculate the winnings
+for i, elem in enumerate(games_sorted):
+	print(elem)
+	ans += (i+1)*elem[3]
+
+print(ans)
